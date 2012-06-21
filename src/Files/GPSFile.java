@@ -39,7 +39,7 @@ public class GPSFile {
             out.write("<bounds maxlat=\"" + Double.toString(topRight.getLatitude()) + "\"");
             out.write(" maxlon=\"" + Double.toString(topRight.getLongitude()) + "\"");
             out.write(" minlat=\"" + Double.toString(bottomLeft.getLatitude()) + "\"");
-            out.write(" minlon=\"" + Double.toString(bottomLeft.getLongitude()) + "\">");
+            out.write(" minlon=\"" + Double.toString(bottomLeft.getLongitude()) + "\"/>");
             out.newLine();
             out.write("</metadata>");
             out.newLine();
