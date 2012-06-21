@@ -20,6 +20,8 @@ import net.divbyzero.gpx.Waypoint;
 /**
  *
  * @author al
+ * TDOD - remove dupicate points
+ * add intermediate points
  */
 public class Converter {
 
@@ -43,7 +45,7 @@ public class Converter {
             Track theTrack = convertPlacemark(thePlacemark);
             theGPX.addTrack(theTrack);
         }
-        
+
         setTimes(theSpeed, theGPX);
 
         return theGPX;
@@ -68,6 +70,7 @@ public class Converter {
                 theTrack.addSegment(theSegment);
             } else {
                 TrackSegment theSegment = new TrackSegment();
+                Waypoint prevWayPoint = null;
                 for (int i = 0; i < noOfPoints; ++i) {
                     Waypoint theWayPoint = new Waypoint();
                     PointData pointAt = thePlacemark.getItem().getPointAt(i);
@@ -75,7 +78,16 @@ public class Converter {
                     theCoords.setLatitude(pointAt.getLatitude());
                     theCoords.setLongitude(pointAt.getLongitude());
                     theWayPoint.setCoordinate(theCoords);
-                    theSegment.addWaypoint(theWayPoint);
+                    
+                    if(prevWayPoint == null){
+                        theSegment.addWaypoint(theWayPoint);
+                    } else {                     
+                        if(!theCoords.equals(prevWayPoint.getCoordinate())){
+                            theSegment.addWaypoint(theWayPoint);                            
+                        }
+                    }
+                    
+                    prevWayPoint = theWayPoint;
                 }
                 theTrack.addSegment(theSegment);
             }
@@ -184,10 +196,27 @@ public class Converter {
                         double theTime = theLength / theSpeed;
                         theDate.setTimeInMillis(theDate.getTimeInMillis() + (long) (theTime * 1000));
                     }
-                    
+
                     theWayPoint.setTime(theDate.getTime());
                     prevWayPoint = theWayPoint;
                 }
+            }
+        }
+    }
+
+    public void addIntermediatePoints(GPX theData) {
+        ArrayList<Track> tracks = theData.getTracks();
+        double length = 0.0;
+        for (Track theTrack : tracks) {
+            length += theTrack.length();
+        }
+        double lengthIncrement = length / 100.0;
+        
+        List<TrackSegment> theSegments = Converter.getSegments(theData);
+        if (!theSegments.isEmpty()) {
+            for (TrackSegment theSegment : theSegments) {
+                List<Waypoint> trackWayPoints = theSegment.getWaypoints();
+                Waypoint prevWayPoint = null;   
             }
         }
     }

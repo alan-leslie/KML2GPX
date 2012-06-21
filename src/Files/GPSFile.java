@@ -5,13 +5,11 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import net.divbyzero.gpx.Coordinate;
 import net.divbyzero.gpx.GPX;
-import net.divbyzero.gpx.Track;
 import net.divbyzero.gpx.TrackSegment;
 import net.divbyzero.gpx.Waypoint;
 
@@ -69,14 +67,7 @@ public class GPSFile {
                 theDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/London"));
                 SimpleDateFormat theTimeFormat = new SimpleDateFormat("HH:mm:ss");
                 theDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/London"));
-        
-                ArrayList<Track> tracks = theData.getTracks();
-                double length = 0.0;
-                for(Track theTrack: tracks){
-                    length += theTrack.length();
-                }
-                double lengthIncrement = length/100.0;
-                             
+                                     
                 for (TrackSegment theSegment : theSegments) {
                     out.write("<trkseg>");
                     out.newLine();
