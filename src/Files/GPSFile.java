@@ -1,4 +1,3 @@
-
 package Files;
 
 import java.io.BufferedWriter;
@@ -15,6 +14,7 @@ import net.divbyzero.gpx.Waypoint;
  * @author al
  */
 public class GPSFile {
+
     public static void writeData(String fileName,
             String theTitle,
             GPX theData) {
@@ -22,7 +22,7 @@ public class GPSFile {
         try {
             theWriter = new FileWriter(fileName);
             BufferedWriter out = new BufferedWriter(theWriter);
-            
+
             out.write("<?xml version=\"1.0\"?>");
             out.newLine();
             out.write("<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:ns0=\"http://www.w3.org/2001/XMLSchema-instance\" creator=\"garmin2gpx.py\" version=\"1.1\" ns0:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/0/gpx.xsd\">");
@@ -31,7 +31,7 @@ public class GPSFile {
             out.newLine();
             out.write("<name>" + theTitle + "</name>");
             out.newLine();
-            
+
             Coordinate topRight = getTopRight(theData);
             Coordinate bottomLeft = getBottomLeft(theData);
             out.write("<bounds maxlat=\"" + Double.toString(topRight.getLatitude()));
@@ -40,20 +40,53 @@ public class GPSFile {
             out.write(" minlon=\"" + Double.toString(bottomLeft.getLongitude()));
             out.newLine();
             out.write("</metadata>");
-            
+
             List<Waypoint> theWayPoints = getWayPoints(theData);
             List<TrackSegment> theSegments = getSegments(theData);
-  
-            
+
+
             for (Waypoint theWayPoint : theWayPoints) {
                 out.write("<wpt lat=\"" + theWayPoint.getCoordinate().getLatitude());
                 out.write(" lon=\"" + theWayPoint.getCoordinate().getLongitude() + ">");
                 out.newLine();
-                out.write("<desc>" +theWayPoint.getDesc() + "</desc>");
+                out.write("<desc>" + theWayPoint.getDesc() + "</desc>");
                 out.newLine();
                 out.write("</wpt>");
                 out.newLine();
             }
+
+            if (!theSegments.isEmpty()) {
+                out.write("<trk>");
+                out.newLine();
+
+                for (TrackSegment theSegment : theSegments) {
+                    out.write("<trkseg>");
+                    out.newLine();
+                    
+                    List<Waypoint> trackWayPoints = theSegment.getWaypoints();
+                    
+                    for(Waypoint theWayPoint: trackWayPoints){
+                        out.write("<trkpt lat=\"" + theWayPoint.getCoordinate().getLatitude());
+                        out.write(" lon=\"" + theWayPoint.getCoordinate().getLongitude() + "\">");
+                        out.newLine();
+                        out.write("<time>" + "2012-06-20T23:49:54Z" + "</time>");
+                        out.newLine();
+                        out.write("<ele>" + "0.0" + "</ele>");
+                        out.newLine();
+                        out.write("</trkpt>");
+                        out.newLine();
+                    }
+                    
+                    out.write("</trkseg>");
+                    out.newLine();
+                }
+                
+                out.write("</trk>");
+                out.newLine();
+            }
+
+            out.write("</gpx>");
+            out.newLine();
 
             out.flush();
         } catch (IOException e) {
