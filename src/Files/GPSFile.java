@@ -36,20 +36,21 @@ public class GPSFile {
 
             Coordinate topRight = getTopRight(theData);
             Coordinate bottomLeft = getBottomLeft(theData);
-            out.write("<bounds maxlat=\"" + Double.toString(topRight.getLatitude()));
-            out.write(" maxlon=\"" + Double.toString(topRight.getLongitude()));
-            out.write(" minlat=\"" + Double.toString(bottomLeft.getLatitude()));
-            out.write(" minlon=\"" + Double.toString(bottomLeft.getLongitude()));
+            out.write("<bounds maxlat=\"" + Double.toString(topRight.getLatitude()) + "\"");
+            out.write(" maxlon=\"" + Double.toString(topRight.getLongitude()) + "\"");
+            out.write(" minlat=\"" + Double.toString(bottomLeft.getLatitude()) + "\"");
+            out.write(" minlon=\"" + Double.toString(bottomLeft.getLongitude()) + "\"");
             out.newLine();
             out.write("</metadata>");
-
+            out.newLine();
+            
             List<Waypoint> theWayPoints = getWayPoints(theData);
             List<TrackSegment> theSegments = getSegments(theData);
 
 
             for (Waypoint theWayPoint : theWayPoints) {
-                out.write("<wpt lat=\"" + theWayPoint.getCoordinate().getLatitude());
-                out.write(" lon=\"" + theWayPoint.getCoordinate().getLongitude() + ">");
+                out.write("<wpt lat=\"" + theWayPoint.getCoordinate().getLatitude() + "\"");
+                out.write(" lon=\"" + theWayPoint.getCoordinate().getLongitude() + "\">");
                 out.newLine();
                 out.write("<desc>" + theWayPoint.getDesc() + "</desc>");
                 out.newLine();
@@ -68,7 +69,7 @@ public class GPSFile {
                     List<Waypoint> trackWayPoints = theSegment.getWaypoints();
                     
                     for(Waypoint theWayPoint: trackWayPoints){
-                        out.write("<trkpt lat=\"" + theWayPoint.getCoordinate().getLatitude());
+                        out.write("<trkpt lat=\"" + theWayPoint.getCoordinate().getLatitude() + "\"");
                         out.write(" lon=\"" + theWayPoint.getCoordinate().getLongitude() + "\">");
                         out.newLine();
                         out.write("<time>" + "2012-06-20T23:49:54Z" + "</time>");

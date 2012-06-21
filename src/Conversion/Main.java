@@ -4,6 +4,7 @@ package Conversion;
  * 
  *
  */
+import Files.GPSFile;
 import KML.KMLDocument;
 import java.io.IOException;
 import java.io.FileInputStream;
@@ -12,6 +13,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+import net.divbyzero.gpx.GPX;
 
 /**
  *
@@ -51,6 +53,9 @@ public class Main {
         
         KMLDocument theKML = new KMLDocument(theFile, theLogger);
         theKML.printData();
+        Converter theConv = new Converter(theKML, theLogger);
+        GPX theGPX = theConv.convert();
+        GPSFile.writeData("Output.gpx", "Swedish Pub Crawl", theGPX);
     }
 
     /**
