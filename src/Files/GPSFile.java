@@ -3,9 +3,11 @@ package Files;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import net.divbyzero.gpx.Coordinate;
 import net.divbyzero.gpx.GPX;
+import net.divbyzero.gpx.Track;
 import net.divbyzero.gpx.TrackSegment;
 import net.divbyzero.gpx.Waypoint;
 
@@ -103,18 +105,82 @@ public class GPSFile {
     }
 
     private static Coordinate getTopRight(GPX theData) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        Coordinate retVal = new Coordinate();
+        retVal.setLatitude(-90.0);
+        retVal.setLongitude(-180.0);
+        
+        ArrayList<Track> tracks = theData.getTracks();
+        for(Track theTrack : tracks){
+            for(TrackSegment theSegment : theTrack.getSegments()){
+                ArrayList<Waypoint> waypoints = theSegment.getWaypoints();
+                for(Waypoint theWayPoint: waypoints){
+                    Coordinate theCoord = theWayPoint.getCoordinate();
+                    if(theCoord.getLatitude() > retVal.getLatitude()){
+                        retVal.setLatitude(theCoord.getLatitude());
+                    }
+                    if(theCoord.getLongitude() > retVal.getLongitude()){
+                        retVal.setLongitude(theCoord.getLongitude());
+                    }              
+                }
+            }
+        }
+        
+        return retVal;
     }
 
     private static Coordinate getBottomLeft(GPX theData) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        Coordinate retVal = new Coordinate();
+        retVal.setLatitude(90.0);
+        retVal.setLongitude(180.0);
+        
+        ArrayList<Track> tracks = theData.getTracks();
+        for(Track theTrack : tracks){
+            for(TrackSegment theSegment : theTrack.getSegments()){
+                ArrayList<Waypoint> waypoints = theSegment.getWaypoints();
+                for(Waypoint theWayPoint: waypoints){
+                    Coordinate theCoord = theWayPoint.getCoordinate();
+                    if(theCoord.getLatitude() < retVal.getLatitude()){
+                        retVal.setLatitude(theCoord.getLatitude());
+                    }
+                    if(theCoord.getLongitude() < retVal.getLongitude()){
+                        retVal.setLongitude(theCoord.getLongitude());
+                    }              
+                }
+            }
+        }
+        
+        return retVal;
     }
 
     private static List<Waypoint> getWayPoints(GPX theData) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        List<Waypoint> retVal = new ArrayList<Waypoint>();
+        
+        ArrayList<Track> tracks = theData.getTracks();
+        for(Track theTrack : tracks){
+            for(TrackSegment theSegment : theTrack.getSegments()){
+                ArrayList<Waypoint> waypoints = theSegment.getWaypoints();
+                if(waypoints.size() == 1){
+                    retVal.add(waypoints.get(0));
+                }
+            }
+        }
+        
+        return retVal;
     }
 
     private static List<TrackSegment> getSegments(GPX theData) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        List<TrackSegment> retVal = new ArrayList<TrackSegment>();
+        
+        ArrayList<Track> tracks = theData.getTracks();
+        for(Track theTrack : tracks){
+            for(TrackSegment theSegment : theTrack.getSegments()){
+                ArrayList<Waypoint> waypoints = theSegment.getWaypoints();
+                if(waypoints.size() > 1){
+                    retVal.add(theSegment);
+                }
+            }
+        }
+        
+        return retVal;
     }
 }
