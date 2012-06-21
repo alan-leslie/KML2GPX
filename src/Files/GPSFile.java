@@ -3,8 +3,13 @@ package Files;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 import net.divbyzero.gpx.Coordinate;
 import net.divbyzero.gpx.GPX;
 import net.divbyzero.gpx.Track;
@@ -19,6 +24,7 @@ public class GPSFile {
 
     public static void writeData(String fileName,
             String theTitle,
+            double theSpeed,
             GPX theData) {
         FileWriter theWriter = null;
         try {
@@ -61,23 +67,42 @@ public class GPSFile {
             if (!theSegments.isEmpty()) {
                 out.write("<trk>");
                 out.newLine();
+                Calendar theDate = new GregorianCalendar();
+                theDate.setTimeZone(TimeZone.getTimeZone("Europe/London"));
+                Date now = new Date();
+                theDate.setTimeInMillis(now.getTime());
+                SimpleDateFormat theDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm Z");
+                theDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/London"));
 
                 for (TrackSegment theSegment : theSegments) {
                     out.write("<trkseg>");
                     out.newLine();
                     
                     List<Waypoint> trackWayPoints = theSegment.getWaypoints();
-                    
+                    Waypoint prevWayPoint = null;
+                 
                     for(Waypoint theWayPoint: trackWayPoints){
+                        if(prevWayPoint != null){
+                            double theLength = theWayPoint.calculateDistanceTo(prevWayPoint);
+                            double theTime = theLength/theSpeed;
+                            theDate.setTimeInMillis(theDate.getTimeInMillis() + (long)(theTime * 1000));
+                        }
+
                         out.write("<trkpt lat=\"" + theWayPoint.getCoordinate().getLatitude() + "\"");
                         out.write(" lon=\"" + theWayPoint.getCoordinate().getLongitude() + "\">");
                         out.newLine();
-                        out.write("<time>" + "2012-06-20T23:49:54Z" + "</time>");
+                        out.write("<time>");
+                        Date dateIncrement = theDate.getTime();
+                        String format = theDateFormat.format(dateIncrement);
+                        out.write(format);
+                        out.write("</time>");
                         out.newLine();
                         out.write("<ele>" + "0.0" + "</ele>");
                         out.newLine();
                         out.write("</trkpt>");
                         out.newLine();
+                        
+                        prevWayPoint = theWayPoint;
                     }
                     
                     out.write("</trkseg>");

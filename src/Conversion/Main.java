@@ -44,9 +44,9 @@ public class Main {
             }
         }
 
-        String speedStr = properties.getProperty("Speed", "3");
-        int theSpeed = Integer.parseInt(speedStr);
-        String theFile = properties.getProperty("Filename", "WalkingDirectionsFromVictoriaToBoda.kml");
+        String speedStr = properties.getProperty("Speed", "1.3");
+        double theSpeed = Double.parseDouble(speedStr);
+        String theFile = properties.getProperty("FileName", "WalkingDirectionsFromVictoriaToBoda.kml");
         String theOutputDir = properties.getProperty("OutputDir", ".");
 
         Logger theLogger = Main.makeLogger();
@@ -55,7 +55,7 @@ public class Main {
         theKML.printData();
         Converter theConv = new Converter(theKML, theLogger);
         GPX theGPX = theConv.convert();
-        GPSFile.writeData("Output.gpx", "Swedish Pub Crawl", theGPX);
+        GPSFile.writeData("Output.gpx", "Swedish Pub Crawl", theSpeed, theGPX);
     }
 
     /**
