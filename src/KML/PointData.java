@@ -12,8 +12,8 @@ public class PointData {
         String[] splitCoords = theCoords.split(",");
         
         if(splitCoords.length > 1){
-            latitude = Double.parseDouble(splitCoords[0]);
-            longitude = Double.parseDouble(splitCoords[1]);
+            longitude = Double.parseDouble(splitCoords[0]);
+            latitude = Double.parseDouble(splitCoords[1]);
         }
     }
 
