@@ -54,8 +54,8 @@ public class Main {
         KMLDocument theKML = new KMLDocument(theFile, theLogger);
         theKML.printData();
         Converter theConv = new Converter(theKML, theLogger);
-        GPX theGPX = theConv.convert();
-        GPSFile.writeData("Output.gpx", "Swedish Pub Crawl", theSpeed, theGPX);
+        GPX theGPX = theConv.convert(theSpeed);
+        GPSFile.writeData("Output.gpx", "Swedish Pub Crawl", theGPX);
     }
 
     /**

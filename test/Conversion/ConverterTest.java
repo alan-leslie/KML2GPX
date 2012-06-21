@@ -49,7 +49,7 @@ public class ConverterTest {
         KMLDocument theKML = new KMLDocument("WalkingDirectionsFromVictoriaToBoda.kml", theLogger);
         
         Converter theConverter = new Converter(theKML, theLogger);
-        GPX theGPX = theConverter.convert();
+        GPX theGPX = theConverter.convert(1.3);
         ArrayList<Track> tracks = theGPX.getTracks();
         assertEquals(3,tracks.size());
         
