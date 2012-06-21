@@ -71,9 +71,11 @@ public class GPSFile {
                 theDate.setTimeZone(TimeZone.getTimeZone("Europe/London"));
                 Date now = new Date();
                 theDate.setTimeInMillis(now.getTime());
-                SimpleDateFormat theDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm Z");
+                SimpleDateFormat theDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 theDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/London"));
-
+                SimpleDateFormat theTimeFormat = new SimpleDateFormat("HH:mm:ss");
+                theDateFormat.setTimeZone(TimeZone.getTimeZone("Europe/London"));
+                
                 for (TrackSegment theSegment : theSegments) {
                     out.write("<trkseg>");
                     out.newLine();
@@ -93,7 +95,7 @@ public class GPSFile {
                         out.newLine();
                         out.write("<time>");
                         Date dateIncrement = theDate.getTime();
-                        String format = theDateFormat.format(dateIncrement);
+                        String format = theDateFormat.format(dateIncrement) + "T" + theTimeFormat.format(dateIncrement) + "Z";
                         out.write(format);
                         out.write("</time>");
                         out.newLine();
