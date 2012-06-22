@@ -78,15 +78,15 @@ public class Converter {
                     theCoords.setLatitude(pointAt.getLatitude());
                     theCoords.setLongitude(pointAt.getLongitude());
                     theWayPoint.setCoordinate(theCoords);
-                    
-                    if(prevWayPoint == null){
+
+                    if (prevWayPoint == null) {
                         theSegment.addWaypoint(theWayPoint);
-                    } else {                     
-                        if(!theCoords.equals(prevWayPoint.getCoordinate())){
-                            theSegment.addWaypoint(theWayPoint);                            
+                    } else {
+                        if (!theCoords.equals(prevWayPoint.getCoordinate())) {
+                            theSegment.addWaypoint(theWayPoint);
                         }
                     }
-                    
+
                     prevWayPoint = theWayPoint;
                 }
                 theTrack.addSegment(theSegment);
@@ -205,19 +205,59 @@ public class Converter {
     }
 
     public void addIntermediatePoints(GPX theData) {
-        ArrayList<Track> tracks = theData.getTracks();
+        List<Track> tracks = theData.getTracks();
         double length = 0.0;
         for (Track theTrack : tracks) {
             length += theTrack.length();
         }
         double lengthIncrement = length / 100.0;
-        
+
         List<TrackSegment> theSegments = Converter.getSegments(theData);
         if (!theSegments.isEmpty()) {
             for (TrackSegment theSegment : theSegments) {
                 List<Waypoint> trackWayPoints = theSegment.getWaypoints();
-                Waypoint prevWayPoint = null;   
+                Waypoint prevWayPoint = null;
             }
         }
+    }
+
+    public static Coordinate midPoint(Coordinate pt1, Coordinate pt2) {
+        Coordinate retVal = new Coordinate();
+        double lon1 = pt1.getLongitude();
+        double lat1 = pt1.getLatitude();
+        double lon2 = pt2.getLongitude();
+        double lat2 = pt2.getLatitude();
+
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        //convert to radians
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+        lon1 = Math.toRadians(lon1);
+
+        double Bx = Math.cos(lat2) * Math.cos(dLon);
+        double By = Math.cos(lat2) * Math.sin(dLon);
+        double lat3 = Math.atan2(Math.sin(lat1) + Math.sin(lat2), Math.sqrt((Math.cos(lat1) + Bx) * (Math.cos(lat1) + Bx) + By * By));
+        double lon3 = lon1 + Math.atan2(By, Math.cos(lat1) + Bx);
+        
+        retVal.setLatitude(Math.toDegrees(lat3));
+        retVal.setLongitude(Math.toDegrees(lon3));
+
+        return retVal;
+    }
+
+    public static void main(String[] args) {
+        Coordinate pt1 = new Coordinate();
+        Coordinate pt2 = new Coordinate();
+        pt1.setLatitude(34.122222);
+        pt1.setLongitude(118.4111111);
+        pt2.setLatitude(40.66972222);
+        pt2.setLongitude(73.94388889);
+
+        Coordinate midPoint = midPoint(pt1, pt2);
+        
+        //print out in degrees
+//        System.out.println(Math.toDegrees(lat3) + " " + Math.toDegrees(lon3));
+        System.out.println(midPoint.getLatitude() + " " + midPoint.getLongitude());     
     }
 }
