@@ -204,7 +204,8 @@ public class Converter {
         }
     }
 
-    public void addIntermediatePoints(GPX theData) {
+    public GPX addIntermediatePoints(GPX theData) {
+        GPX retVal = new GPX();
         List<Track> tracks = theData.getTracks();
         double length = 0.0;
         for (Track theTrack : tracks) {
@@ -212,13 +213,57 @@ public class Converter {
         }
         double lengthIncrement = length / 100.0;
 
-        List<TrackSegment> theSegments = Converter.getSegments(theData);
-        if (!theSegments.isEmpty()) {
-            for (TrackSegment theSegment : theSegments) {
-                List<Waypoint> trackWayPoints = theSegment.getWaypoints();
-                Waypoint prevWayPoint = null;
+        for (Track theTrack : tracks) {
+            List<TrackSegment> theSegments = theTrack.getSegments();
+            Track theNewTrack = new Track();
+            if (!theSegments.isEmpty()) {
+                for (TrackSegment theSegment : theSegments) {
+                    TrackSegment theNewSegment = new TrackSegment();
+                    List<Waypoint> trackWayPoints = theSegment.getWaypoints();
+
+                    int i = 0;
+                    int ptsLength = trackWayPoints.size();
+                    for (Waypoint theWayPoint : trackWayPoints) {
+                        theNewSegment.addWaypoint(theWayPoint);
+
+                        if (i < ptsLength - 1) {
+                            // todo get distance and if it is over the threshhold 
+
+                            Waypoint nextWayPoint = trackWayPoints.get(i + 1);
+
+                            double distance = theWayPoint.calculateDistanceTo(nextWayPoint);
+
+//                            while (distance > 1.5 * lengthIncrement) {
+                            if(distance > 1.5 * lengthIncrement) {
+                                Coordinate nextPt = nextWayPoint.getCoordinate();
+                                Coordinate thisPt = theWayPoint.getCoordinate();
+                                
+//                                Coordinate newPt = getPointOnLine(thisPt, nextPt, lengthIncrement);
+                                Coordinate theMidPoint = midPoint(thisPt, nextPt);
+                                
+                                theWayPoint = new Waypoint();
+                                theWayPoint.setCoordinate(theMidPoint);
+                                // todo set time correctly
+                                Date dateNow = new Date();
+                                theWayPoint.setTime(dateNow);
+                                
+                                distance = theWayPoint.calculateDistanceTo(nextWayPoint);
+                                
+                                theNewSegment.addWaypoint(theWayPoint);
+                            }
+                        }
+
+                        i++;
+                    }
+
+                    theNewTrack.addSegment(theNewSegment);
+                }
             }
+
+            retVal.addTrack(theNewTrack);
         }
+
+        return retVal;
     }
 
     public static Coordinate midPoint(Coordinate pt1, Coordinate pt2) {
@@ -239,9 +284,50 @@ public class Converter {
         double By = Math.cos(lat2) * Math.sin(dLon);
         double lat3 = Math.atan2(Math.sin(lat1) + Math.sin(lat2), Math.sqrt((Math.cos(lat1) + Bx) * (Math.cos(lat1) + Bx) + By * By));
         double lon3 = lon1 + Math.atan2(By, Math.cos(lat1) + Bx);
-        
+
         retVal.setLatitude(Math.toDegrees(lat3));
         retVal.setLongitude(Math.toDegrees(lon3));
+
+        return retVal;
+    }
+
+    private static double getInitialBearing(Coordinate pt1, Coordinate pt2) {
+        double lat1 = pt1.getLatitude();
+        double lat2 = pt2.getLatitude();
+        double dLon = Math.toRadians(pt2.getLongitude() - pt1.getLongitude());
+
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+
+        double y = Math.sin(dLon) * Math.cos(lat2);
+        double x = Math.cos(lat1) * Math.sin(lat2)
+                - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+
+        double brng = Math.atan2(y, x);
+        brng = Math.toDegrees(brng);
+
+        return brng;
+    }
+
+    private static Coordinate getPointOnLine(Coordinate pt1, Coordinate pt2, double d) {
+        Coordinate retVal = new Coordinate();
+        double lat1 = pt1.getLatitude();
+        double lon1 = pt1.getLongitude();
+        double brng = getInitialBearing(pt1, pt2);
+        double R = 6371000.0;
+
+        lat1 = Math.toRadians(lat1);
+
+        double lat2 = Math.asin(Math.sin(lat1) * Math.cos(d / R)
+                + Math.cos(lat1) * Math.sin(d / R) * Math.cos(brng));
+        double lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(d / R) * Math.cos(lat1),
+                Math.cos(d / R) - Math.sin(lat1) * Math.sin(lat2));
+
+        lat2 = Math.toDegrees(lat2);
+        lon2 = Math.toDegrees(lon2);
+
+        retVal.setLatitude(lat2);
+        retVal.setLongitude(lon2);
 
         return retVal;
     }
@@ -249,15 +335,18 @@ public class Converter {
     public static void main(String[] args) {
         Coordinate pt1 = new Coordinate();
         Coordinate pt2 = new Coordinate();
-        pt1.setLatitude(34.122222);
-        pt1.setLongitude(118.4111111);
-        pt2.setLatitude(40.66972222);
-        pt2.setLongitude(73.94388889);
-
+//        pt1.setLatitude(34.122222);
+//        pt1.setLongitude(118.4111111);
+//        pt2.setLatitude(40.66972222);
+//        pt2.setLongitude(73.94388889);
+        pt1.setLatitude(35.0);
+        pt1.setLongitude(45.0);
+        pt2.setLatitude(35.0);
+        pt2.setLongitude(135.0);
         Coordinate midPoint = midPoint(pt1, pt2);
-        
+
         //print out in degrees
 //        System.out.println(Math.toDegrees(lat3) + " " + Math.toDegrees(lon3));
-        System.out.println(midPoint.getLatitude() + " " + midPoint.getLongitude());     
+        System.out.println(midPoint.getLatitude() + " " + midPoint.getLongitude());
     }
 }

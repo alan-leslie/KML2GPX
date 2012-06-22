@@ -55,7 +55,9 @@ public class Main {
         theKML.printData();
         Converter theConv = new Converter(theKML, theLogger);
         GPX theGPX = theConv.convert(theSpeed);
+        GPX newGPX = theConv.addIntermediatePoints(theGPX);
         GPSFile.writeData("Output.gpx", "Swedish Pub Crawl", theGPX);
+        GPSFile.writeData("NewOutput.gpx", "Swedish Pub Crawl", newGPX);
     }
 
     /**
