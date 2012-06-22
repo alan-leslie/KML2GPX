@@ -82,7 +82,7 @@ public class Converter {
                     if (prevWayPoint == null) {
                         theSegment.addWaypoint(theWayPoint);
                     } else {
-                        if (!theCoords.equals(prevWayPoint.getCoordinate())) {
+                        if (!equalCoords(theCoords, prevWayPoint.getCoordinate())) {
                             theSegment.addWaypoint(theWayPoint);
                         }
                     }
@@ -227,46 +227,33 @@ public class Converter {
                         theNewSegment.addWaypoint(theWayPoint);
 
                         if (i < ptsLength - 1) {
-                            // todo get distance and if it is over the threshhold 
-
                             Waypoint nextWayPoint = trackWayPoints.get(i + 1);
 
                             double distance = theWayPoint.calculateDistanceTo(nextWayPoint);
 
-//                            while (distance > 1.5 * lengthIncrement) {
-                            if(distance > 1.5 * lengthIncrement) {
+                            if (distance > 1.3 * lengthIncrement) {
                                 Coordinate nextPt = nextWayPoint.getCoordinate();
                                 Coordinate thisPt = theWayPoint.getCoordinate();
-                                
-//                                Coordinate newPt = getPointOnLine(thisPt, nextPt, lengthIncrement);
+
                                 Coordinate theMidPoint = midPoint(thisPt, nextPt);
                                 Coordinate theQuarterPoint = midPoint(thisPt, theMidPoint);
                                 Coordinate theThreeQuarterPoint = midPoint(theMidPoint, nextPt);
-                                
-                                if(distance > 6 * lengthIncrement){
+
+                                if (distance > 5 * lengthIncrement) {
                                     Waypoint thePoint = new Waypoint();
-                                    thePoint.setCoordinate(theQuarterPoint);   
-                                    Date dateNow = new Date();
-                                    thePoint.setTime(dateNow);
+                                    thePoint.setCoordinate(theQuarterPoint);
                                     theNewSegment.addWaypoint(thePoint);
                                 }
-                                                                
+
                                 theWayPoint = new Waypoint();
                                 theWayPoint.setCoordinate(theMidPoint);
-                                // todo set time correctly
-                                Date dateNow = new Date();
-                                theWayPoint.setTime(dateNow);
-                                
-                                distance = theWayPoint.calculateDistanceTo(nextWayPoint);
-                                
+
                                 theNewSegment.addWaypoint(theWayPoint);
-                                
-                                if(distance > 6 * lengthIncrement){
+
+                                if (distance > 5 * lengthIncrement) {
                                     Waypoint thePoint = new Waypoint();
-                                    thePoint.setCoordinate(theThreeQuarterPoint);   
-                                    Date dateNow2 = new Date();
-                                    thePoint.setTime(dateNow2);
-                                    theNewSegment.addWaypoint(thePoint);                                    
+                                    thePoint.setCoordinate(theThreeQuarterPoint);
+                                    theNewSegment.addWaypoint(thePoint);
                                 }
                             }
                         }
@@ -280,7 +267,7 @@ public class Converter {
 
             retVal.addTrack(theNewTrack);
         }
-        
+
         setTimes(theSpeed, retVal);
 
         return retVal;
@@ -354,6 +341,15 @@ public class Converter {
         return retVal;
     }
 
+    public boolean equalCoords(Coordinate pt1, Coordinate pt2) {
+        if (pt1.getLatitude() == pt2.getLatitude()
+                && pt1.getLongitude() == pt2.getLongitude()) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static void main(String[] args) {
         Coordinate pt1 = new Coordinate();
         Coordinate pt2 = new Coordinate();
@@ -366,24 +362,24 @@ public class Converter {
         pt2.setLatitude(35.0);
         pt2.setLongitude(135.0);
         Coordinate midPoint = midPoint(pt1, pt2);
-        
+
         Coordinate bCheck1 = new Coordinate();
         Coordinate bCheck2 = new Coordinate();
         bCheck1.setLatitude(53.32056);
         bCheck1.setLongitude(-1.72972);
         bCheck2.setLatitude(53.18806);
-        bCheck2.setLongitude(0.13639);        
-        
+        bCheck2.setLongitude(0.13639);
+
         double bearing = getInitialBearing(bCheck1, bCheck2);
         Waypoint dPt1 = new Waypoint();
         Waypoint dPt2 = new Waypoint();
         dPt1.setCoordinate(bCheck1);
         dPt2.setCoordinate(bCheck2);
-        
+
         double distance = dPt1.calculateDistanceTo(dPt2);
-        
+
         Coordinate theEndPoint = getPointOnLine(bCheck1, bCheck2, distance);
-                          
+
         //print out in degrees
 //        System.out.println(Math.toDegrees(lat3) + " " + Math.toDegrees(lon3));
         System.out.println(midPoint.getLatitude() + " " + midPoint.getLongitude());
