@@ -317,6 +317,7 @@ public class Converter {
         double R = 6371000.0;
 
         lat1 = Math.toRadians(lat1);
+        lon1 = Math.toRadians(lon1);
 
         double lat2 = Math.asin(Math.sin(lat1) * Math.cos(d / R)
                 + Math.cos(lat1) * Math.sin(d / R) * Math.cos(brng));
@@ -344,9 +345,29 @@ public class Converter {
         pt2.setLatitude(35.0);
         pt2.setLongitude(135.0);
         Coordinate midPoint = midPoint(pt1, pt2);
-
+        
+        Coordinate bCheck1 = new Coordinate();
+        Coordinate bCheck2 = new Coordinate();
+        bCheck1.setLatitude(53.32056);
+        bCheck1.setLongitude(-1.72972);
+        bCheck2.setLatitude(53.18806);
+        bCheck2.setLongitude(0.13639);        
+        
+        double bearing = getInitialBearing(bCheck1, bCheck2);
+        Waypoint dPt1 = new Waypoint();
+        Waypoint dPt2 = new Waypoint();
+        dPt1.setCoordinate(bCheck1);
+        dPt2.setCoordinate(bCheck2);
+        
+        double distance = dPt1.calculateDistanceTo(dPt2);
+        
+        Coordinate theEndPoint = getPointOnLine(bCheck1, bCheck2, distance);
+                          
         //print out in degrees
 //        System.out.println(Math.toDegrees(lat3) + " " + Math.toDegrees(lon3));
         System.out.println(midPoint.getLatitude() + " " + midPoint.getLongitude());
+        System.out.println("Bearing: " + Double.toString(bearing));
+        System.out.println("Distance: " + Double.toString(distance));
+        System.out.println(theEndPoint.getLatitude() + " " + theEndPoint.getLongitude());
     }
 }
