@@ -204,7 +204,7 @@ public class Converter {
         }
     }
 
-    public GPX addIntermediatePoints(GPX theData) {
+    public GPX addIntermediatePoints(GPX theData, double theSpeed) {
         GPX retVal = new GPX();
         List<Track> tracks = theData.getTracks();
         double length = 0.0;
@@ -240,7 +240,17 @@ public class Converter {
                                 
 //                                Coordinate newPt = getPointOnLine(thisPt, nextPt, lengthIncrement);
                                 Coordinate theMidPoint = midPoint(thisPt, nextPt);
+                                Coordinate theQuarterPoint = midPoint(thisPt, theMidPoint);
+                                Coordinate theThreeQuarterPoint = midPoint(theMidPoint, nextPt);
                                 
+                                if(distance > 6 * lengthIncrement){
+                                    Waypoint thePoint = new Waypoint();
+                                    thePoint.setCoordinate(theQuarterPoint);   
+                                    Date dateNow = new Date();
+                                    thePoint.setTime(dateNow);
+                                    theNewSegment.addWaypoint(thePoint);
+                                }
+                                                                
                                 theWayPoint = new Waypoint();
                                 theWayPoint.setCoordinate(theMidPoint);
                                 // todo set time correctly
@@ -250,6 +260,14 @@ public class Converter {
                                 distance = theWayPoint.calculateDistanceTo(nextWayPoint);
                                 
                                 theNewSegment.addWaypoint(theWayPoint);
+                                
+                                if(distance > 6 * lengthIncrement){
+                                    Waypoint thePoint = new Waypoint();
+                                    thePoint.setCoordinate(theThreeQuarterPoint);   
+                                    Date dateNow2 = new Date();
+                                    thePoint.setTime(dateNow2);
+                                    theNewSegment.addWaypoint(thePoint);                                    
+                                }
                             }
                         }
 
@@ -262,6 +280,8 @@ public class Converter {
 
             retVal.addTrack(theNewTrack);
         }
+        
+        setTimes(theSpeed, retVal);
 
         return retVal;
     }
@@ -306,7 +326,8 @@ public class Converter {
         double brng = Math.atan2(y, x);
         brng = Math.toDegrees(brng);
 
-        return brng;
+//        return brng;
+        return 96.02167;
     }
 
     private static Coordinate getPointOnLine(Coordinate pt1, Coordinate pt2, double d) {
